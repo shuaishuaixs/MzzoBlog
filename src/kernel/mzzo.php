@@ -1,43 +1,84 @@
 <?php
 
+require './kernel/controller.php';
+require "./kernel/lib/SqlTool.class.php";
+
+$path = $_GET["path"];
+// echo "path 路径：" . $path;
+// echo "<br/>";
+
+
+/***
+ * 获取控制器目录
+ */
+$catalog_pos = strpos($path,'/');
+$catalog = substr($path,0,$catalog_pos);
+// echo "将要访问的控制器目录：" . $catalog;
+// echo "<br/>";
+
+
+/***
+ * 判断是否有id
+ */
+$id_pos_start = strpos($path,'_');
+$id_pos_end= strpos($path,'.');
+
+if ($id_pos_start == 0) {
+	// 没有则默认给 0
+	$id = 0;
+	$id_pos_start = $id_pos_end;
+} else {
+	// 有则获取id
+	$id = substr($path, $id_pos_start + 1, $id_pos_end  - $id_pos_start - 1);
+}
+
+/***
+ * 获取访问的控制器目标
+ */
+$section = substr($path, $catalog_pos + 1, $id_pos_start - $catalog_pos - 1);
+// echo "将要访问的控制器对象：" . $section;
+// echo "<br/>";
+// echo "将要访问的id：" . $id;
+// echo "<br/>";
+
+
+// 拼装控制器路径
+$path="./controller/".$catalog ."/".$section.".php";
+echo $path;
+echo "<br/>";
+
+// 调用控制器
+// require "$path";
+
+
+$control = new Controller($path);
+
 
 /*
 
-1.
+现获取目录，在获取对应的控制器对象
 
-要调用核心包的话
-最简单的方式自然是 require 和 include
-那么这两者之间选用哪一个请百度之后斟酌
-注意引用之后的话，当前这个文件的代码就是在 网站根目录的 ./index.php 这个位置执行的代码
+请求：
+index.php?path=article/article_1.html
+输出：
+path 路径：article/article_1.html
+将要访问的控制器目录：article
+将要访问的控制器对象：article
+将要访问的id：1
+路径：
+./controller/article/article.php
 
-
-
-2.
-
-那么我们要根据 url 来获取到控制器首先就要定义一套 url 转控制器的规则，在没有开启url重写功能的情况下
-就只能通过 $_GET 获取到参数来
-
-例如
-
-http://localhost/index.php?path=home/index.html
-获取到的 $_GET 参数是：
-
-Array
-(
-    [path] => home/index.html
-)
-
-
-接着我们可以通过字符串处理等到我们想要的控制器路径
-
-处理完之后应该获取到路径应该是：
-
-根目录/controller/home/index.php
-
-接着调用这个控制器
+请求
+index.php?path=public/index.html
+输出：
+path 路径：public/index.html
+将要访问的控制器目录：public
+将要访问的控制器对象：index
+将要访问的id：1
+路径：
+./controller/public/index.php
 
 */
-
 
 
 
